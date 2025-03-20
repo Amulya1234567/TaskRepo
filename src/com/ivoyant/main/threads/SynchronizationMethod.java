@@ -4,7 +4,7 @@ package com.ivoyant.main.threads;
 import java.util.concurrent.atomic.AtomicInteger;
 
 class Counter {
-//    private int count = 0;
+    private int count = 0;
 //    Synchronized method to prevent race conditions
 
 //    public synchronized void increment() {
@@ -13,23 +13,24 @@ class Counter {
 
     // Lock object to synchronize a specific block
 
-//    private final Object lock = new Object();
-//
-//    public void increment() {
-//        synchronized (lock) { // Synchronizing only the critical section
-//            count++;
-//        }
-//    }
+    private final Object lock = new Object();
 
-    private AtomicInteger count = new AtomicInteger(0); // Atomic variable
-
-    public void increment() {
-        count.incrementAndGet(); // Atomic operation (No locking required)
-    }
-
-    public AtomicInteger getCount() {
+    public int  increment() {
+        synchronized (lock) { // Synchronizing only the critical section
+            count++;
+        }
         return count;
     }
+
+//    private AtomicInteger count = new AtomicInteger(0); // Atomic variable
+//
+//    public void increment() {
+//        count.incrementAndGet(); // Atomic operation (No locking required)
+//    }
+//
+//    public AtomicInteger getCount() {
+//        return count;
+//    }
 }
 
 
@@ -43,7 +44,7 @@ class MyThread1 extends Thread {
 
     @Override
     public void run() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 1; i < 1000; i++) {
             counter.increment();
         }
     }
@@ -60,7 +61,7 @@ class MyThread2 extends Thread {
 
     @Override
     public void run() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 1; i < 1000; i++) {
             counter.increment();
         }
     }
@@ -87,7 +88,7 @@ public class SynchronizationMethod {
         }
 
         // Both threads have finished execution
-        System.out.println("Final count: " + counter.getCount()); // Expected output: 2000
+        System.out.println("Final count: " + counter.increment()); // Expected output: 2000
     }
 }
 
