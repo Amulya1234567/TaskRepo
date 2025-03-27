@@ -20,15 +20,20 @@ public class RestaurantController {
     public ResponseEntity<Object> getFood(){
         return restService.getFood();
     }
-
+//
     @GetMapping("/getFoodById/{id}")
     public ResponseEntity<Object> getFoodById(@PathVariable int id){
         return restService.getFoodById(id);
     }
-
+//
     @GetMapping("/getFoodByName/{name}")
     public ResponseEntity<Object> getFoodByName(@PathVariable String name){
         return restService.getFoodByName(name);
+    }
+
+    @DeleteMapping("/deleteById/{id}")
+    public ResponseEntity<Object> deleteById(@PathVariable int id){
+        return restService.deleteById(id);
     }
 
 

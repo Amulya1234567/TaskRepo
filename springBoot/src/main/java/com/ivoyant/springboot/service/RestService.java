@@ -1,7 +1,8 @@
 package com.ivoyant.springboot.service;
 
 import com.ivoyant.springboot.dto.Restaurant;
-import com.ivoyant.springboot.repository.RestRepo;
+
+import com.ivoyant.springboot.repository.RestaurantJDBCRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,43 +15,47 @@ import java.util.Optional;
 @Service
 public class RestService {
     @Autowired
-    RestRepo restRepo;
+    RestaurantJDBCRepo restaurantJDBCRepo;
 
     public ResponseEntity<Object> save(Restaurant restaurant) {
 //       HashMap<String,Object> hashMap=new HashMap<>();
-         Restaurant savedRestaurant=restRepo.save(restaurant);
+        int count =restaurantJDBCRepo.save(restaurant);
+        if (count > 0) {
+            return new ResponseEntity<>("Restaurant saved successfully", HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>("Failed to save restaurant", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
 //        hashMap.put("Menu", "Saved");
 //        hashMap.put("Food",restaurant);
-        return new ResponseEntity<>(savedRestaurant,HttpStatus.CREATED);
+//        return new ResponseEntity<>(savedRestaurant,HttpStatus.CREATED);
     }
 
     public ResponseEntity<Object> getFood() {
 //      HashMap<String,Object> hashMap=new HashMap<>();
-        List<Restaurant> lst=restRepo.findAll();
+        List<Restaurant> lst=restaurantJDBCRepo.findAll();
         if(lst.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.CREATED);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }else{
             return new ResponseEntity<>(lst, HttpStatus.CREATED);
         }
-
     }
-
+//
     public ResponseEntity<Object> getFoodById(int id) {
-        Optional<Restaurant> food = restRepo.findById(id);
-        if (food.isEmpty()) {
+        List<Restaurant> lst = restaurantJDBCRepo.findById(id);
+        if (lst.isEmpty()) {
             System.out.println("Food Not Found");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         else{
-            return new ResponseEntity<>(food, HttpStatus.CREATED);
+            return new ResponseEntity<>(lst, HttpStatus.CREATED);
 
         }
 
     }
-
+//
     public ResponseEntity<Object> getFoodByName(String name) {
-        Optional<Restaurant> food = restRepo.findByFood(name);
+        List<Restaurant> food = restaurantJDBCRepo.findByFood(name);
         if (food.isEmpty()) {
             System.out.println("Food Not Found");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -60,5 +65,15 @@ public class RestService {
             return new ResponseEntity<>(food, HttpStatus.CREATED);
 
         }
+    }
+
+    public ResponseEntity<Object> deleteById(int id) {
+        int count =restaurantJDBCRepo.delete(id);
+        if (count > 0) {
+            return new ResponseEntity<>(count, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>("Failed to delete", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 }
